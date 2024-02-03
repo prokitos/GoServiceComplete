@@ -6,6 +6,7 @@ import (
 	postgres "modular/internal/models"
 	"net/http"
 	"os"
+	"strconv"
 
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
@@ -22,11 +23,13 @@ import (
 // 	println("Migrate complete")
 // }
 
-// вызов операции над таблицей
-func ExecuteToDB(w http.ResponseWriter, conn string, operation string) {
+func ConnectToDb() *sql.DB {
+
 	log.Info("connecting to the database")
 
-	godotenv.Load()
+	//config.LoadEnv("postgress")
+	godotenv.Load("postgress.env")
+
 	envUser := os.Getenv("USER")
 	envPass := os.Getenv("PASS")
 	envHost := os.Getenv("HOST")
@@ -39,6 +42,12 @@ func ExecuteToDB(w http.ResponseWriter, conn string, operation string) {
 		log.Error("database connection error")
 		log.Debug("there is not connection with database")
 	}
+
+	return db
+}
+
+// вызов операции над таблицей
+func ExecuteToDB(db *sql.DB, w http.ResponseWriter, conn string, operation string) {
 	defer db.Close()
 
 	result, err := db.Exec(conn)
@@ -46,38 +55,40 @@ func ExecuteToDB(w http.ResponseWriter, conn string, operation string) {
 		log.Error("database connection error")
 		log.Debug("database error executing the request: " + conn)
 	}
+	if result == nil {
+		w.Write([]byte(`"status": "Null execute"`))
+		return
+	}
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		log.Error("database connection error")
+		log.Debug("data change error: " + conn)
+	}
 
 	// Логи и вывод данных на сервер/клиент
-	log.Info(operation + " complete")
-	fmt.Print(operation)
-	fmt.Print(result.RowsAffected())
+	log.Info(operation + "complete")
+	fmt.Print("operation " + operation + ", ")
+	fmt.Print(rowsAffected)
 	fmt.Println(" Rows affected")
-	fmt.Fprintln(w, "data has", operation)
+
+	var temp string = strconv.Itoa(int(rowsAffected))
+	w.Write([]byte(`"status": "` + operation + ` success",`))
+	w.Write([]byte(`"affected_rows": "` + temp + `"`))
 }
 
 // показать таблицу
-func ShowFromDB(w http.ResponseWriter, stroka string) {
-	log.Info("connecting to the database")
+func ShowFromDB(db *sql.DB, w http.ResponseWriter, stroka string) {
 
-	godotenv.Load()
-	envUser := os.Getenv("USER")
-	envPass := os.Getenv("PASS")
-	envHost := os.Getenv("HOST")
-	envPort := os.Getenv("PORT")
-	envName := os.Getenv("NAME")
-
-	connStr := fmt.Sprintf("postgresql://%s:%s@%s:%s/%s?sslmode=disable", envUser, envPass, envHost, envPort, envName)
-	db, err := sql.Open("postgres", connStr)
-	if err != nil {
-		log.Error("database connection error")
-		log.Debug("there is not connection with database")
-	}
 	defer db.Close()
 
 	rows, err := db.Query(stroka)
 	if err != nil {
 		log.Error("database connection error")
 		log.Debug("database error executing the request: " + stroka)
+	}
+	if rows == nil {
+		w.Write([]byte(`"status": "Null execute"`))
+		return
 	}
 	defer rows.Close()
 	users := []postgres.User{}
@@ -93,10 +104,17 @@ func ShowFromDB(w http.ResponseWriter, stroka string) {
 		users = append(users, p)
 	}
 
-	fmt.Fprintln(w, " ")
+	w.Write([]byte(`{`))
 	for _, i := range users {
-		fmt.Fprintln(w, i.Id, i.Name, i.Surname, i.Patronymic, i.Age, i.Sex, i.Nationality)
+		w.Write([]byte(`{"id": "` + strconv.Itoa(i.Id) + `",`))
+		w.Write([]byte(`"name": "` + i.Name + `",`))
+		w.Write([]byte(`"surname": "` + i.Surname + `",`))
+		w.Write([]byte(`"patronymic": "` + i.Patronymic + `",`))
+		w.Write([]byte(`"age": "` + strconv.Itoa(i.Age) + `",`))
+		w.Write([]byte(`"gender": "` + i.Sex + `",`))
+		w.Write([]byte(`"nationality": "` + i.Nationality + `"},`))
 	}
+	w.Write([]byte(`}`))
 
 	log.Info("the data was successfully shown to the user")
 }

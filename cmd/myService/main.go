@@ -5,9 +5,19 @@ import (
 	"os"
 
 	log "github.com/sirupsen/logrus"
+	"golang.org/x/sys/windows"
 )
 
-// Запуск сервера при старте приложения
+// @title Orders API
+// @version 1.0
+// @description This is a sample service for managing orders
+// @termsOfService http://swagger.io/terms/
+// @contact.name API Support
+// @contact.email soberkoder@gmail.com
+// @license.name Apache 2.0
+// @license.url http://www.apache.org/licenses/LICENSE-2.0.html
+// @host localhost:8080
+// @BasePath /
 func main() {
 
 	log.SetLevel(log.DebugLevel) // показывать логи debug уровня
@@ -15,7 +25,25 @@ func main() {
 	//enableLogToFile()							// выводить логи в файл
 
 	log.Info("the server is starting")
+
+	winConsole := windows.Handle(os.Stdin.Fd())
+	var mode uint32
+	err := windows.GetConsoleMode(winConsole, &mode)
+	if err != nil {
+		log.Println(err)
+	}
+	mode &^= windows.ENABLE_QUICK_EDIT_MODE
+	err = windows.SetConsoleMode(winConsole, mode)
+	if err != nil {
+		log.Println(err)
+	}
+
 	app.MainServer()
+
+}
+
+func MainServer() {
+
 }
 
 // Записывать логи в файл

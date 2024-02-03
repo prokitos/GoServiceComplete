@@ -13,25 +13,22 @@ import (
 // Обновление записи
 func UpdateData(w http.ResponseWriter, user postgres.User) {
 	var conn string = table_user.ConStringUpdate(user)
-	table_user.ExecuteToDB(w, conn, "updated ")
+	dbCon := table_user.ConnectToDb()
+	table_user.ExecuteToDB(dbCon, w, conn, "Update")
 }
 
 // Удаление записи по айди
 func DeleteDataEncrichment(w http.ResponseWriter, id int) {
 	var conn string = table_user.ConStringDelete(id)
-	table_user.ExecuteToDB(w, conn, "deleted ")
+	dbCon := table_user.ConnectToDb()
+	table_user.ExecuteToDB(dbCon, w, conn, "Delete")
 }
 
-// Показать запись по параметрам
+// Показать записи
 func ShowSpecData(w http.ResponseWriter, offset int, limit int, sort string, user postgres.User) {
 	var conn string = table_user.ConStringShowSpec(offset, limit, sort, user)
-	table_user.ShowFromDB(w, conn)
-}
-
-// Показать все записи
-func ShowAllData(w http.ResponseWriter) {
-	var conn string = table_user.ConStringShowAll()
-	table_user.ShowFromDB(w, conn)
+	dbCon := table_user.ConnectToDb()
+	table_user.ShowFromDB(dbCon, w, conn)
 }
 
 // Создать новую запись
@@ -51,7 +48,9 @@ func CreateDataEncrichment(w http.ResponseWriter, user postgres.User) {
 	log.Info("A response was received from all the APIs")
 
 	var conn string = table_user.ConStringInsert(user)
-	table_user.ExecuteToDB(w, conn, "created ")
+
+	dbCon := table_user.ConnectToDb()
+	table_user.ExecuteToDB(dbCon, w, conn, "Create")
 }
 
 // получить национальность по имени

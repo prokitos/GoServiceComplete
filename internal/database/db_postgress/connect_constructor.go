@@ -2,6 +2,7 @@ package db_postgress
 
 import (
 	postgres "modular/internal/models"
+	"reflect"
 	"strconv"
 	"strings"
 )
@@ -28,11 +29,10 @@ func ConStringUpdate(user postgres.User) string {
 		additional += " nationality = '" + user.Nationality + "' ,"
 	}
 	if user.Age >= 0 {
-		additional += " age = '" + strconv.Itoa(user.Id) + "' ,"
+		additional += " age = '" + strconv.Itoa(user.Age) + "' ,"
 	}
 
 	additional = strings.TrimSuffix(additional, ",")
-
 	if len(additional) > 0 {
 		stroka += "set" + additional
 	}
@@ -42,73 +42,37 @@ func ConStringUpdate(user postgres.User) string {
 	return stroka
 }
 
-// создание строки запроса для удаления записи по айди
-func ConStringDelete(id int) string {
-	var stroka string = "delete from users where id = '" + strconv.Itoa(id) + "'"
-	return stroka
-}
-
-// создание строки запроса для возвращения записей по параметрам
+// создание строки запроса для просмотра записей
 func ConStringShowSpec(offset int, limit int, sort string, user postgres.User) string {
 	// создание строки по параметрам
 	var stroka string = "select * from users"
 	var whereCheck bool = false
 
-	if user.Id >= 0 {
-		if !whereCheck {
-			stroka += " where id = '" + strconv.Itoa(user.Id) + "'"
-			whereCheck = true
+	values := reflect.ValueOf(user)
+	for i := 0; i < values.NumField(); i++ {
+
+		var curName string = values.Type().Field(i).Name
+		var curValue string = ""
+
+		// если пришло число, то конвертить из инта в стринг, иначе просто брать стринг
+		if values.Field(i).Type().Name() == "int" {
+			temp := values.Field(i).Interface().(int)
+			if temp >= 0 {
+				curValue = strconv.Itoa(temp)
+			}
 		} else {
-			stroka += " and id = '" + strconv.Itoa(user.Id) + "'"
+			curValue = values.Field(i).String()
 		}
-	}
-	if user.Age >= 0 {
-		if !whereCheck {
-			stroka += " where age = '" + strconv.Itoa(user.Age) + "'"
-			whereCheck = true
-		} else {
-			stroka += " and age = '" + strconv.Itoa(user.Age) + "'"
+
+		if curValue != "" {
+			if !whereCheck {
+				stroka += " where " + (strings.ToLower(curName)) + " = '" + curValue + "'"
+				whereCheck = true
+			} else {
+				stroka += " and " + (strings.ToLower(curName)) + " = '" + curValue + "'"
+			}
 		}
-	}
-	if user.Name != "" {
-		if !whereCheck {
-			stroka += " where name = '" + user.Name + "'"
-			whereCheck = true
-		} else {
-			stroka += " and name = '" + user.Name + "'"
-		}
-	}
-	if user.Surname != "" {
-		if !whereCheck {
-			stroka += " where surname = '" + user.Surname + "'"
-			whereCheck = true
-		} else {
-			stroka += " and surname = '" + user.Surname + "'"
-		}
-	}
-	if user.Patronymic != "" {
-		if !whereCheck {
-			stroka += " where patronymic = '" + user.Patronymic + "'"
-			whereCheck = true
-		} else {
-			stroka += " and patronymic = '" + user.Patronymic + "'"
-		}
-	}
-	if user.Sex != "" {
-		if !whereCheck {
-			stroka += " where sex = '" + user.Sex + "'"
-			whereCheck = true
-		} else {
-			stroka += " and sex = '" + user.Sex + "'"
-		}
-	}
-	if user.Nationality != "" {
-		if !whereCheck {
-			stroka += " where nationality = '" + user.Nationality + "'"
-			whereCheck = true
-		} else {
-			stroka += " and nationality = '" + user.Nationality + "'"
-		}
+
 	}
 
 	if len(sort) > 0 {
@@ -124,9 +88,10 @@ func ConStringShowSpec(offset int, limit int, sort string, user postgres.User) s
 	return stroka
 }
 
-// создание строки чтобы показать все записи
-func ConStringShowAll() string {
-	return "select * from users"
+// создание строки запроса для удаления записи по айди
+func ConStringDelete(id int) string {
+	var stroka string = "delete from users where id = '" + strconv.Itoa(id) + "'"
+	return stroka
 }
 
 // создание строки для создания записи
