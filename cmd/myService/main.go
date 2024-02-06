@@ -6,6 +6,8 @@ import (
 
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/sys/windows"
+
+	_ "modular/docs"
 )
 
 // @title Orders API
@@ -16,7 +18,7 @@ import (
 // @contact.email soberkoder@gmail.com
 // @license.name Apache 2.0
 // @license.url http://www.apache.org/licenses/LICENSE-2.0.html
-// @host localhost:8080
+// @host localhost:8888
 // @BasePath /
 func main() {
 
@@ -26,6 +28,13 @@ func main() {
 
 	log.Info("the server is starting")
 
+	PauseDisable() // отключение заморозки приложения при выделении текста в консоли
+
+	app.MainServer()
+
+}
+
+func PauseDisable() {
 	winConsole := windows.Handle(os.Stdin.Fd())
 	var mode uint32
 	err := windows.GetConsoleMode(winConsole, &mode)
@@ -37,13 +46,6 @@ func main() {
 	if err != nil {
 		log.Println(err)
 	}
-
-	app.MainServer()
-
-}
-
-func MainServer() {
-
 }
 
 // Записывать логи в файл

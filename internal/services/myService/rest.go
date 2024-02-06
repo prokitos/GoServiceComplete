@@ -13,21 +13,21 @@ import (
 // Обновление записи
 func UpdateData(w http.ResponseWriter, user postgres.User) {
 	var conn string = table_user.ConStringUpdate(user)
-	dbCon := table_user.ConnectToDb()
+	dbCon := table_user.ConnectToDb("internal/config/postgress.env")
 	table_user.ExecuteToDB(dbCon, w, conn, "Update")
 }
 
 // Удаление записи по айди
 func DeleteDataEncrichment(w http.ResponseWriter, id int) {
 	var conn string = table_user.ConStringDelete(id)
-	dbCon := table_user.ConnectToDb()
+	dbCon := table_user.ConnectToDb("internal/config/postgress.env")
 	table_user.ExecuteToDB(dbCon, w, conn, "Delete")
 }
 
 // Показать записи
 func ShowSpecData(w http.ResponseWriter, offset int, limit int, sort string, user postgres.User) {
 	var conn string = table_user.ConStringShowSpec(offset, limit, sort, user)
-	dbCon := table_user.ConnectToDb()
+	dbCon := table_user.ConnectToDb("internal/config/postgress.env")
 	table_user.ShowFromDB(dbCon, w, conn)
 }
 
@@ -49,7 +49,7 @@ func CreateDataEncrichment(w http.ResponseWriter, user postgres.User) {
 
 	var conn string = table_user.ConStringInsert(user)
 
-	dbCon := table_user.ConnectToDb()
+	dbCon := table_user.ConnectToDb("internal/config/postgress.env")
 	table_user.ExecuteToDB(dbCon, w, conn, "Create")
 }
 

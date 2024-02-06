@@ -23,12 +23,11 @@ import (
 // 	println("Migrate complete")
 // }
 
-func ConnectToDb() *sql.DB {
+func ConnectToDb(path string) *sql.DB {
 
 	log.Info("connecting to the database")
 
-	//config.LoadEnv("postgress")
-	godotenv.Load("postgress.env")
+	godotenv.Load(path)
 
 	envUser := os.Getenv("USER")
 	envPass := os.Getenv("PASS")
@@ -42,6 +41,8 @@ func ConnectToDb() *sql.DB {
 		log.Error("database connection error")
 		log.Debug("there is not connection with database")
 	}
+
+	db.Begin()
 
 	return db
 }

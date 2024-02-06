@@ -8,14 +8,16 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-// GetOrders godoc
-// @Summary Get details of all orders
-// @Description Get details of all orders
-// @Tags orders
+// Users godoc
+// @Summary Delete persons by id from users
+// @Description Delete persons by id from users
+// @Tags users
 // @Accept  json
 // @Produce  json
-// @Success 200 {array} int
-// @Router /delete [get]
+// @Param id query int true "delete user"
+// @Failure 400 {string} string "{code:400, msg:"failure"}"
+// @Success 200 {object} string "OK"
+// @Router /delete [delete]
 func deleteGetRequest(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Content-Type", "application/json")
 	log.Info("receiving a delete request")

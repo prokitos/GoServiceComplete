@@ -1,5 +1,5 @@
 basePath: /
-host: localhost:8080
+host: localhost:8888
 info:
   contact:
     email: soberkoder@gmail.com
@@ -13,10 +13,35 @@ info:
   version: "1.0"
 paths:
   /delete:
-    get:
+    delete:
       consumes:
       - application/json
-      description: Get details of all orders
+      description: Delete persons by id from users
+      parameters:
+      - description: delete user
+        in: query
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: '{code:400, msg:"failure"}'
+          schema:
+            type: string
+      summary: Delete persons by id from users
+      tags:
+      - users
+  /insert:
+    post:
+      consumes:
+      - application/json
+      description: Insert persons into users
       produces:
       - application/json
       responses:
@@ -26,7 +51,41 @@ paths:
             items:
               type: integer
             type: array
-      summary: Get details of all orders
+      summary: Insert persons into users
       tags:
-      - orders
+      - users
+  /show:
+    get:
+      consumes:
+      - application/json
+      description: Show persons in users
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              type: integer
+            type: array
+      summary: Show persons in users
+      tags:
+      - users
+  /update:
+    put:
+      consumes:
+      - application/json
+      description: Update persons in users
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              type: integer
+            type: array
+      summary: Update persons in users
+      tags:
+      - users
 swagger: "2.0"

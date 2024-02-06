@@ -12,8 +12,24 @@ import (
 	httpSwagger "github.com/swaggo/http-swagger"
 )
 
+// запуск сервера
 func MainServer() {
 
+	router := routers()
+
+	srv := &http.Server{
+		Handler:      router,
+		Addr:         ":8888",
+		WriteTimeout: 15 * time.Second,
+		ReadTimeout:  15 * time.Second,
+	}
+
+	log.Fatal(srv.ListenAndServe())
+
+}
+
+// все пути
+func routers() *mux.Router {
 	router := mux.NewRouter()
 
 	router.PathPrefix("/swagger").Handler(httpSwagger.WrapHandler)
@@ -22,15 +38,7 @@ func MainServer() {
 	router.HandleFunc("/update", updateGetRequest).Methods(http.MethodPost)
 	router.HandleFunc("/show", showsSpecGetRequest).Methods(http.MethodGet)
 
-	srv := &http.Server{
-		Handler:      router,
-		Addr:         ":8889",
-		WriteTimeout: 15 * time.Second,
-		ReadTimeout:  15 * time.Second,
-	}
-
-	log.Fatal(srv.ListenAndServe())
-
+	return router
 }
 
 // https://www.youtube.com/watch?v=DBZgt9iIWzk

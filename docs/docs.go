@@ -24,8 +24,8 @@ const docTemplate = `{
     "basePath": "{{.BasePath}}",
     "paths": {
         "/delete": {
-            "get": {
-                "description": "Get details of all orders",
+            "delete": {
+                "description": "Delete persons by id from users",
                 "consumes": [
                     "application/json"
                 ],
@@ -33,9 +33,99 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "orders"
+                    "users"
                 ],
-                "summary": "Get details of all orders",
+                "summary": "Delete persons by id from users",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "delete user",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "{code:400, msg:\"failure\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/insert": {
+            "post": {
+                "description": "Insert persons into users",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Insert persons into users",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/show": {
+            "get": {
+                "description": "Show persons in users",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Show persons in users",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/update": {
+            "put": {
+                "description": "Update persons in users",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Update persons in users",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -55,7 +145,7 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "localhost:8080",
+	Host:             "localhost:8888",
 	BasePath:         "/",
 	Schemes:          []string{},
 	Title:            "Orders API",

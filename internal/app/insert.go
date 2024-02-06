@@ -8,7 +8,14 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-// ответ на запрос для создания нового пользователя
+// Users godoc
+// @Summary Insert persons into users
+// @Description Insert persons into users
+// @Tags users
+// @Accept  json
+// @Produce  json
+// @Success 200 {array} int
+// @Router /insert [post]
 func insertGetRequest(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Content-Type", "application/json")
 	log.Info("receiving a create request")

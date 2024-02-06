@@ -97,3 +97,15 @@ func TestShowDB(t *testing.T) {
 
 	}
 }
+
+func TestConnetion(t *testing.T) {
+
+	res := ConnectToDb("../../config/postgress.env")
+
+	if res.Stats().InUse == 0 {
+		t.Errorf("result wrong at test, does not connect to server")
+	}
+
+	res.Close()
+
+}

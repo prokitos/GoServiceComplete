@@ -59,6 +59,7 @@ require (
 	github.com/DATA-DOG/go-sqlmock v1.5.2
 	github.com/gin-gonic/gin v1.9.1
 	github.com/gorilla/mux v1.8.1
+	github.com/julienschmidt/httprouter v1.3.0
 	github.com/swaggo/http-swagger v1.3.4
 	github.com/swaggo/swag/example/celler v0.0.0-20240201060249-98ed434a1088
 	golang.org/x/sys v0.16.0 // indirect

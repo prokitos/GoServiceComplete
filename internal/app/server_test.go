@@ -346,3 +346,48 @@ func TestShow(t *testing.T) {
 
 	}
 }
+
+// valide http links test
+func TestHttpConnect(t *testing.T) {
+
+	testTable := []struct {
+		testNum int
+		method  string
+		path    string
+		functs  any
+	}{
+		{
+			testNum: 1,
+			method:  "POST",
+			path:    "/insert",
+			functs:  deleteGetRequest,
+		},
+		{
+			testNum: 2,
+			method:  "GET",
+			path:    "/show",
+			functs:  showsSpecGetRequest,
+		},
+	}
+
+	for _, tc := range testTable {
+		req, err := http.NewRequest(tc.method, tc.path, nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+		rr := newRequestRecorder(req, tc.method, tc.path, deleteGetRequest)
+		if rr.Code != 200 {
+			t.Error("Expected response code to be 200")
+		}
+	}
+
+}
+
+func newRequestRecorder(req *http.Request, method string, strPath string, fnHandler func(w http.ResponseWriter, r *http.Request)) *httptest.ResponseRecorder {
+	router := routers()
+
+	rr := httptest.NewRecorder()
+
+	router.ServeHTTP(rr, req)
+	return rr
+}

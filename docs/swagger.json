@@ -14,12 +14,12 @@
         },
         "version": "1.0"
     },
-    "host": "localhost:8080",
+    "host": "localhost:8888",
     "basePath": "/",
     "paths": {
         "/delete": {
-            "get": {
-                "description": "Get details of all orders",
+            "delete": {
+                "description": "Delete persons by id from users",
                 "consumes": [
                     "application/json"
                 ],
@@ -27,9 +27,99 @@
                     "application/json"
                 ],
                 "tags": [
-                    "orders"
+                    "users"
                 ],
-                "summary": "Get details of all orders",
+                "summary": "Delete persons by id from users",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "delete user",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "{code:400, msg:\"failure\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/insert": {
+            "post": {
+                "description": "Insert persons into users",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Insert persons into users",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/show": {
+            "get": {
+                "description": "Show persons in users",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Show persons in users",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/update": {
+            "put": {
+                "description": "Update persons in users",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Update persons in users",
                 "responses": {
                     "200": {
                         "description": "OK",

@@ -9,7 +9,14 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-// ответ на запрос для изменения пользователя
+// Users godoc
+// @Summary Update persons in users
+// @Description Update persons in users
+// @Tags users
+// @Accept  json
+// @Produce  json
+// @Success 200 {array} int
+// @Router /update [put]
 func updateGetRequest(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Content-Type", "application/json")
 	log.Info("receiving a update request")
