@@ -10,9 +10,9 @@ import (
 	_ "modular/docs"
 )
 
-// @title Orders API
+// @title User API
 // @version 1.0
-// @description This is a sample service for managing orders
+// @description This is a sample service for managing users
 // @termsOfService http://swagger.io/terms/
 // @contact.name API Support
 // @contact.email soberkoder@gmail.com

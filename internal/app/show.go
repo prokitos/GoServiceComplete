@@ -15,7 +15,12 @@ import (
 // @Tags users
 // @Accept  json
 // @Produce  json
-// @Success 200 {array} int
+// @Param limit query int false "Show max limit records"
+// @Param offset query int false "Show records with current offset"
+// @Param user query showUser false "Show user"
+// @Failure 400 "Invalid username supplied"
+// @Failure 404 "User not found"
+// @Success 200 {object} showUser "successful operation"
 // @Router /show [get]
 func showsSpecGetRequest(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Content-Type", "application/json")
@@ -73,4 +78,14 @@ func showsSpecGetRequest(w http.ResponseWriter, r *http.Request) {
 
 	w.Write([]byte(`"message": "Show request succes",`))
 	services.ShowSpecData(w, offset, limit, sortPerson, searchPerson)
+}
+
+type showUser struct {
+	ID          int    `json:"id" example:"1" format:"int64"`
+	Age         int    `json:"age" example:"25" format:"int64"`
+	Name        string `json:"name" example:"ivan"`
+	Surname     string `json:"surname" example:"ivanov"`
+	Patronymic  string `json:"patronymic" example:"ivanovich"`
+	Sex         string `json:"gender" example:"male"`
+	Nationality string `json:"nationality" example:"RU"`
 }

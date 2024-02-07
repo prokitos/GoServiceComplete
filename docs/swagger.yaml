@@ -1,15 +1,66 @@
 basePath: /
+definitions:
+  app.addUser:
+    properties:
+      name:
+        example: ivan
+        type: string
+      patronymic:
+        example: ivanovich
+        type: string
+      surname:
+        example: ivanov
+        type: string
+    type: object
+  app.showUser:
+    properties:
+      age:
+        example: 25
+        format: int64
+        type: integer
+      gender:
+        example: male
+        type: string
+      id:
+        example: 1
+        format: int64
+        type: integer
+      name:
+        example: ivan
+        type: string
+      nationality:
+        example: RU
+        type: string
+      patronymic:
+        example: ivanovich
+        type: string
+      surname:
+        example: ivanov
+        type: string
+    type: object
+  app.updateUser:
+    properties:
+      name:
+        example: ivan
+        type: string
+      patronymic:
+        example: ivanovich
+        type: string
+      surname:
+        example: ivanov
+        type: string
+    type: object
 host: localhost:8888
 info:
   contact:
     email: soberkoder@gmail.com
     name: API Support
-  description: This is a sample service for managing orders
+  description: This is a sample service for managing users
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
   termsOfService: http://swagger.io/terms/
-  title: Orders API
+  title: User API
   version: "1.0"
 paths:
   /delete:
@@ -26,14 +77,10 @@ paths:
       produces:
       - application/json
       responses:
-        "200":
-          description: OK
-          schema:
-            type: string
         "400":
-          description: '{code:400, msg:"failure"}'
-          schema:
-            type: string
+          description: Invalid username supplied
+        "404":
+          description: User not found
       summary: Delete persons by id from users
       tags:
       - users
@@ -42,15 +89,18 @@ paths:
       consumes:
       - application/json
       description: Insert persons into users
+      parameters:
+      - description: Add user
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/app.addUser'
       produces:
       - application/json
       responses:
         "200":
-          description: OK
-          schema:
-            items:
-              type: integer
-            type: array
+          description: successful operation
       summary: Insert persons into users
       tags:
       - users
@@ -59,15 +109,56 @@ paths:
       consumes:
       - application/json
       description: Show persons in users
+      parameters:
+      - description: Show max limit records
+        in: query
+        name: limit
+        type: integer
+      - description: Show records with current offset
+        in: query
+        name: offset
+        type: integer
+      - example: 25
+        format: int64
+        in: query
+        name: age
+        type: integer
+      - example: male
+        in: query
+        name: gender
+        type: string
+      - example: 1
+        format: int64
+        in: query
+        name: id
+        type: integer
+      - example: ivan
+        in: query
+        name: name
+        type: string
+      - example: RU
+        in: query
+        name: nationality
+        type: string
+      - example: ivanovich
+        in: query
+        name: patronymic
+        type: string
+      - example: ivanov
+        in: query
+        name: surname
+        type: string
       produces:
       - application/json
       responses:
         "200":
-          description: OK
+          description: successful operation
           schema:
-            items:
-              type: integer
-            type: array
+            $ref: '#/definitions/app.showUser'
+        "400":
+          description: Invalid username supplied
+        "404":
+          description: User not found
       summary: Show persons in users
       tags:
       - users
@@ -76,15 +167,25 @@ paths:
       consumes:
       - application/json
       description: Update persons in users
+      parameters:
+      - description: Update user
+        in: query
+        name: id
+        required: true
+        type: integer
+      - description: Update user
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/app.updateUser'
       produces:
       - application/json
       responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              type: integer
-            type: array
+        "400":
+          description: Invalid username supplied
+        "404":
+          description: User not found
       summary: Update persons in users
       tags:
       - users

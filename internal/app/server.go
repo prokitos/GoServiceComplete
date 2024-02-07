@@ -35,7 +35,7 @@ func routers() *mux.Router {
 	router.PathPrefix("/swagger").Handler(httpSwagger.WrapHandler)
 	router.HandleFunc("/delete", deleteGetRequest).Methods(http.MethodDelete)
 	router.HandleFunc("/insert", insertGetRequest).Methods(http.MethodPost)
-	router.HandleFunc("/update", updateGetRequest).Methods(http.MethodPost)
+	router.HandleFunc("/update", updateGetRequest).Methods(http.MethodPut)
 	router.HandleFunc("/show", showsSpecGetRequest).Methods(http.MethodGet)
 
 	return router

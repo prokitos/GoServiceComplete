@@ -15,7 +15,10 @@ import (
 // @Tags users
 // @Accept  json
 // @Produce  json
-// @Success 200 {array} int
+// @Param id query int true "Update user"
+// @Param user body updateUser true "Update user"
+// @Failure 400 "Invalid username supplied"
+// @Failure 404 "User not found"
 // @Router /update [put]
 func updateGetRequest(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Content-Type", "application/json")
@@ -67,4 +70,10 @@ func updateGetRequest(w http.ResponseWriter, r *http.Request) {
 
 	w.Write([]byte(`"message": "Update request succes",`))
 	services.UpdateData(w, updatePerson)
+}
+
+type updateUser struct {
+	Name       string `json:"name" example:"ivan"`
+	Surname    string `json:"surname" example:"ivanov"`
+	Patronymic string `json:"patronymic" example:"ivanovich"`
 }

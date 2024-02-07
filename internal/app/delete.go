@@ -1,6 +1,8 @@
 package app
 
 import (
+	"encoding/json"
+	postgres "modular/internal/models"
 	services "modular/internal/services/myService"
 	"net/http"
 	"strconv"
@@ -15,8 +17,8 @@ import (
 // @Accept  json
 // @Produce  json
 // @Param id query int true "delete user"
-// @Failure 400 {string} string "{code:400, msg:"failure"}"
-// @Success 200 {object} string "OK"
+// @Failure 400 "Invalid username supplied"
+// @Failure 404 "User not found"
 // @Router /delete [delete]
 func deleteGetRequest(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Content-Type", "application/json")
@@ -27,10 +29,15 @@ func deleteGetRequest(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Error("the delete request was not executed")
 		log.Debug("id couldn't convert to a number: " + param1)
-		w.Write([]byte(`"message": "Delete request failed"`))
+
+		errResp := postgres.ErrorResponse{
+			Message: "Invalid Input",
+			Code:    400,
+		}
+		json.NewEncoder(w).Encode(errResp)
+
 		return
 	}
 
-	w.Write([]byte(`"message": "Delete request succes",`))
 	services.DeleteDataEncrichment(w, inter)
 }

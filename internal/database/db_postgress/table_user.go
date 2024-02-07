@@ -2,6 +2,7 @@ package db_postgress
 
 import (
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	postgres "modular/internal/models"
 	"net/http"
@@ -57,7 +58,7 @@ func ExecuteToDB(db *sql.DB, w http.ResponseWriter, conn string, operation strin
 		log.Debug("database error executing the request: " + conn)
 	}
 	if result == nil {
-		w.Write([]byte(`"status": "Null execute"`))
+		w.Write([]byte(`"status": "400"`))
 		return
 	}
 	rowsAffected, err := result.RowsAffected()
@@ -72,9 +73,13 @@ func ExecuteToDB(db *sql.DB, w http.ResponseWriter, conn string, operation strin
 	fmt.Print(rowsAffected)
 	fmt.Println(" Rows affected")
 
-	var temp string = strconv.Itoa(int(rowsAffected))
-	w.Write([]byte(`"status": "` + operation + ` success",`))
-	w.Write([]byte(`"affected_rows": "` + temp + `"`))
+	var affectedRow int = int(rowsAffected)
+	errResp := postgres.GoodResponse{
+		Message:  "success operation",
+		Code:     200,
+		Affected: affectedRow,
+	}
+	json.NewEncoder(w).Encode(errResp)
 }
 
 // показать таблицу

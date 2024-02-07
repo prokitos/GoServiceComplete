@@ -46,17 +46,11 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
                     "400": {
-                        "description": "{code:400, msg:\"failure\"}",
-                        "schema": {
-                            "type": "string"
-                        }
+                        "description": "Invalid username supplied"
+                    },
+                    "404": {
+                        "description": "User not found"
                     }
                 }
             }
@@ -74,15 +68,20 @@ const docTemplate = `{
                     "users"
                 ],
                 "summary": "Insert persons into users",
+                "parameters": [
+                    {
+                        "description": "Add user",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/app.addUser"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "type": "integer"
-                            }
-                        }
+                        "description": "successful operation"
                     }
                 }
             }
@@ -100,15 +99,76 @@ const docTemplate = `{
                     "users"
                 ],
                 "summary": "Show persons in users",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Show max limit records",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Show records with current offset",
+                        "name": "offset",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "format": "int64",
+                        "example": 25,
+                        "name": "age",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "example": "male",
+                        "name": "gender",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "format": "int64",
+                        "example": 1,
+                        "name": "id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "example": "ivan",
+                        "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "example": "RU",
+                        "name": "nationality",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "example": "ivanovich",
+                        "name": "patronymic",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "example": "ivanov",
+                        "name": "surname",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "successful operation",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "type": "integer"
-                            }
+                            "$ref": "#/definitions/app.showUser"
                         }
+                    },
+                    "400": {
+                        "description": "Invalid username supplied"
+                    },
+                    "404": {
+                        "description": "User not found"
                     }
                 }
             }
@@ -126,16 +186,102 @@ const docTemplate = `{
                     "users"
                 ],
                 "summary": "Update persons in users",
-                "responses": {
-                    "200": {
-                        "description": "OK",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Update user",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "Update user",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "type": "integer"
-                            }
+                            "$ref": "#/definitions/app.updateUser"
                         }
                     }
+                ],
+                "responses": {
+                    "400": {
+                        "description": "Invalid username supplied"
+                    },
+                    "404": {
+                        "description": "User not found"
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "app.addUser": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "example": "ivan"
+                },
+                "patronymic": {
+                    "type": "string",
+                    "example": "ivanovich"
+                },
+                "surname": {
+                    "type": "string",
+                    "example": "ivanov"
+                }
+            }
+        },
+        "app.showUser": {
+            "type": "object",
+            "properties": {
+                "age": {
+                    "type": "integer",
+                    "format": "int64",
+                    "example": 25
+                },
+                "gender": {
+                    "type": "string",
+                    "example": "male"
+                },
+                "id": {
+                    "type": "integer",
+                    "format": "int64",
+                    "example": 1
+                },
+                "name": {
+                    "type": "string",
+                    "example": "ivan"
+                },
+                "nationality": {
+                    "type": "string",
+                    "example": "RU"
+                },
+                "patronymic": {
+                    "type": "string",
+                    "example": "ivanovich"
+                },
+                "surname": {
+                    "type": "string",
+                    "example": "ivanov"
+                }
+            }
+        },
+        "app.updateUser": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "example": "ivan"
+                },
+                "patronymic": {
+                    "type": "string",
+                    "example": "ivanovich"
+                },
+                "surname": {
+                    "type": "string",
+                    "example": "ivanov"
                 }
             }
         }
@@ -148,8 +294,8 @@ var SwaggerInfo = &swag.Spec{
 	Host:             "localhost:8888",
 	BasePath:         "/",
 	Schemes:          []string{},
-	Title:            "Orders API",
-	Description:      "This is a sample service for managing orders",
+	Title:            "User API",
+	Description:      "This is a sample service for managing users",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",
