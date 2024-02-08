@@ -1,12 +1,12 @@
-package postgres
+package models
 
 // структура таблицы
 type User struct {
-	Id          int
+	Id          string
 	Name        string
 	Surname     string
 	Patronymic  string
-	Age         int
+	Age         string
 	Sex         string
 	Nationality string
 }

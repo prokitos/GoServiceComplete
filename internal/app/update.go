@@ -1,7 +1,9 @@
 package app
 
 import (
-	postgres "modular/internal/models"
+	"encoding/json"
+	"io"
+	"modular/internal/models"
 	services "modular/internal/services/myService"
 	"net/http"
 	"strconv"
@@ -15,7 +17,6 @@ import (
 // @Tags users
 // @Accept  json
 // @Produce  json
-// @Param id query int true "Update user"
 // @Param user body updateUser true "Update user"
 // @Failure 400 "Invalid username supplied"
 // @Failure 404 "User not found"
@@ -24,55 +25,33 @@ func updateGetRequest(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Content-Type", "application/json")
 	log.Info("receiving a update request")
 
-	var updatePerson postgres.User
+	reqBody, _ := io.ReadAll(r.Body)
+	var user models.User
+	json.Unmarshal(reqBody, &user)
 
-	param3 := r.FormValue("id")
-	param4 := r.FormValue("age")
-	if param4 == "" {
-		param4 = "-1"
-	}
-
-	if param3 == "" {
-		log.Error("the update request was not executed")
-		log.Debug("id couldn't writing " + param3)
-		w.Write([]byte(`"message": "Update request failed"`))
-		return
-	}
-	ids, err := strconv.Atoi(param3)
-	if err != nil {
-		log.Error("the update request was not executed")
-		log.Debug("id couldn't convert to a number: " + param3)
-		w.Write([]byte(`"message": "Update request failed"`))
-		return
-	}
-	ages, err := strconv.Atoi(param4)
-	if err != nil {
-		log.Error("the update request was not executed")
-		log.Debug("age couldn't convert to a number: " + param4)
-		w.Write([]byte(`"message": "Update request failed"`))
+	if _, err := strconv.Atoi(user.Id); err != nil {
+		models.BadResponseSend(w, "operation failed, wrong id = "+user.Id, 400)
 		return
 	}
 
-	updatePerson.Id = ids
-	updatePerson.Age = ages
-	updatePerson.Name = r.FormValue("name")
-	updatePerson.Surname = r.FormValue("surname")
-	updatePerson.Patronymic = r.FormValue("patronymic")
-	updatePerson.Nationality = r.FormValue("nationality")
-	updatePerson.Sex = r.FormValue("sex")
+	if _, err := strconv.Atoi(user.Age); user.Age != "" && err != nil {
+		models.BadResponseSend(w, "operation failed, wrong Age = "+user.Age, 400)
+		return
+	}
 
-	if len(updatePerson.Name) > 40 || len(updatePerson.Surname) > 40 || len(updatePerson.Patronymic) > 40 || len(updatePerson.Sex) > 40 || updatePerson.Age > 200 || len(updatePerson.Nationality) > 40 {
+	if len(user.Name) > 40 || len(user.Surname) > 40 || len(user.Patronymic) > 40 || len(user.Sex) > 40 || len(user.Nationality) > 40 {
 		log.Error("the update request was not executed")
 		log.Debug("incorrect length of persons data: ")
-		w.Write([]byte(`"message": "Update request failed"`))
+
+		models.BadResponseSend(w, "operation failed, wrong data lenght", 400)
 		return
 	}
 
-	w.Write([]byte(`"message": "Update request succes",`))
-	services.UpdateData(w, updatePerson)
+	services.UpdateData(w, user)
 }
 
 type updateUser struct {
+	Id         string `json:"id" example:"5"`
 	Name       string `json:"name" example:"ivan"`
 	Surname    string `json:"surname" example:"ivanov"`
 	Patronymic string `json:"patronymic" example:"ivanovich"`

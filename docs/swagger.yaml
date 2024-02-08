@@ -40,6 +40,9 @@ definitions:
     type: object
   app.updateUser:
     properties:
+      id:
+        example: "5"
+        type: string
       name:
         example: ivan
         type: string
@@ -110,6 +113,10 @@ paths:
       - application/json
       description: Show persons in users
       parameters:
+      - description: Sort records
+        in: query
+        name: sort
+        type: string
       - description: Show max limit records
         in: query
         name: limit
@@ -162,17 +169,56 @@ paths:
       summary: Show persons in users
       tags:
       - users
+  /test/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete persons by id from users
+      parameters:
+      - description: delete user
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "400":
+          description: Invalid username supplied
+        "404":
+          description: User not found
+      summary: Delete persons by id from users
+      tags:
+      - users
+    get:
+      consumes:
+      - application/json
+      description: Show persons in users
+      parameters:
+      - description: Show users by id
+        in: path
+        name: id
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: successful operation
+          schema:
+            $ref: '#/definitions/app.showUser'
+        "400":
+          description: Invalid username supplied
+        "404":
+          description: User not found
+      summary: Show persons in users
+      tags:
+      - users
   /update:
     put:
       consumes:
       - application/json
       description: Update persons in users
       parameters:
-      - description: Update user
-        in: query
-        name: id
-        required: true
-        type: integer
       - description: Update user
         in: body
         name: user

@@ -9,28 +9,28 @@ func TestExternalAPI(t *testing.T) {
 	testTable := []struct {
 		testNum int
 		name    string
-		age     int
+		age     string
 		gender  string
 		nation  string
 	}{
 		{
 			testNum: 1,
 			name:    "alex",
-			age:     47,
+			age:     "47",
 			gender:  "male",
 			nation:  "CZ",
 		},
 		{
 			testNum: 2,
 			name:    "anna",
-			age:     52,
+			age:     "52",
 			gender:  "female",
 			nation:  "PL",
 		},
 		{
 			testNum: 3,
 			name:    "jojo",
-			age:     58,
+			age:     "58",
 			gender:  "male",
 			nation:  "SA",
 		},
@@ -38,7 +38,7 @@ func TestExternalAPI(t *testing.T) {
 
 	for _, tc := range testTable {
 
-		chann1 := make(chan int)
+		chann1 := make(chan string)
 		chann2 := make(chan string)
 		chann3 := make(chan string)
 

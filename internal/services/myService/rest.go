@@ -12,20 +12,25 @@ import (
 
 // Обновление записи
 func UpdateData(w http.ResponseWriter, user postgres.User) {
+	log.Info("trying to update records with id " + user.Id)
+
 	var conn string = table_user.ConStringUpdate(user)
 	dbCon := table_user.ConnectToDb("internal/config/postgress.env")
 	table_user.ExecuteToDB(dbCon, w, conn, "Update")
 }
 
 // Удаление записи по айди
-func DeleteDataEncrichment(w http.ResponseWriter, id int) {
+func DeleteDataEncrichment(w http.ResponseWriter, id string) {
+	log.Info("trying to delete records with id " + id)
+
 	var conn string = table_user.ConStringDelete(id)
 	dbCon := table_user.ConnectToDb("internal/config/postgress.env")
 	table_user.ExecuteToDB(dbCon, w, conn, "Delete")
 }
 
 // Показать записи
-func ShowSpecData(w http.ResponseWriter, offset int, limit int, sort string, user postgres.User) {
+func ShowSpecData(w http.ResponseWriter, offset string, limit string, sort string, user postgres.User) {
+	log.Info("trying to showing data")
 	var conn string = table_user.ConStringShowSpec(offset, limit, sort, user)
 	dbCon := table_user.ConnectToDb("internal/config/postgress.env")
 	table_user.ShowFromDB(dbCon, w, conn)
@@ -33,7 +38,9 @@ func ShowSpecData(w http.ResponseWriter, offset int, limit int, sort string, use
 
 // Создать новую запись
 func CreateDataEncrichment(w http.ResponseWriter, user postgres.User) {
-	chann1 := make(chan int)
+	log.Info("trying to create data with name=" + user.Name + " surname=" + user.Surname + " patronymic=" + user.Patronymic)
+
+	chann1 := make(chan string)
 	chann2 := make(chan string)
 	chann3 := make(chan string)
 
@@ -66,7 +73,7 @@ func getSexFromName(p_name string, chans chan string) {
 }
 
 // получить возраст по имени
-func getAgeFromName(p_name string, chans chan int) {
+func getAgeFromName(p_name string, chans chan string) {
 	var result string = sendRequestToGet("https://api.agify.io/", p_name)
 	chans <- AgeComputing(result)
 }

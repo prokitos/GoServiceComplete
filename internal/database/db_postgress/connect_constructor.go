@@ -28,8 +28,8 @@ func ConStringUpdate(user postgres.User) string {
 	if user.Nationality != "" {
 		additional += " nationality = '" + user.Nationality + "' ,"
 	}
-	if user.Age >= 0 {
-		additional += " age = '" + strconv.Itoa(user.Age) + "' ,"
+	if user.Age != "" {
+		additional += " age = '" + user.Age + "' ,"
 	}
 
 	additional = strings.TrimSuffix(additional, ",")
@@ -37,13 +37,13 @@ func ConStringUpdate(user postgres.User) string {
 		stroka += "set" + additional
 	}
 
-	stroka += "where id = '" + strconv.Itoa(user.Id) + "'"
+	stroka += "where id = '" + user.Id + "'"
 
 	return stroka
 }
 
 // создание строки запроса для просмотра записей
-func ConStringShowSpec(offset int, limit int, sort string, user postgres.User) string {
+func ConStringShowSpec(offset string, limit string, sort string, user postgres.User) string {
 	// создание строки по параметрам
 	var stroka string = "select * from users"
 	var whereCheck bool = false
@@ -78,25 +78,25 @@ func ConStringShowSpec(offset int, limit int, sort string, user postgres.User) s
 	if len(sort) > 0 {
 		stroka += " order by " + sort
 	}
-	if limit > 0 {
-		stroka += " limit " + strconv.Itoa(limit)
+	if limit != "" {
+		stroka += " limit " + limit
 	}
-	if offset > 0 {
-		stroka += " offset " + strconv.Itoa(offset)
+	if offset != "" {
+		stroka += " offset " + offset
 	}
 
 	return stroka
 }
 
 // создание строки запроса для удаления записи по айди
-func ConStringDelete(id int) string {
-	var stroka string = "delete from users where id = '" + strconv.Itoa(id) + "'"
+func ConStringDelete(id string) string {
+	var stroka string = "delete from users where id = '" + id + "'"
 	return stroka
 }
 
 // создание строки для создания записи
 func ConStringInsert(user postgres.User) string {
 	var result string = "insert into users (name, surname, patronymic, age, sex, nationality) values ('" + user.Name + "', '" +
-		user.Surname + "', '" + user.Patronymic + "', '" + strconv.Itoa(user.Age) + "', '" + user.Sex + "', '" + user.Nationality + "')"
+		user.Surname + "', '" + user.Patronymic + "', '" + user.Age + "', '" + user.Sex + "', '" + user.Nationality + "')"
 	return result
 }

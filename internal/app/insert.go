@@ -2,8 +2,8 @@ package app
 
 import (
 	"encoding/json"
-	"fmt"
-	"io/ioutil"
+	"io"
+	"modular/internal/models"
 	postgres "modular/internal/models"
 	services "modular/internal/services/myService"
 	"net/http"
@@ -24,31 +24,22 @@ func insertGetRequest(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Content-Type", "application/json")
 	log.Info("receiving a create request")
 
-	param1 := r.FormValue("name")
-	param2 := r.FormValue("surname")
-	param3 := r.FormValue("patronymic")
+	reqBody, _ := io.ReadAll(r.Body)
+	var user postgres.User
+	json.Unmarshal(reqBody, &user)
 
-	reqBody, _ := ioutil.ReadAll(r.Body)
-	var post addUser
-	json.Unmarshal(reqBody, &post)
-	fmt.Print(post.Name)
-
-	if len(param1) > 40 || len(param2) > 40 || len(param3) > 40 || len(param1) == 0 || len(param2) == 0 || len(param3) == 0 {
+	if len(user.Name) > 40 || len(user.Surname) > 40 || len(user.Patronymic) > 40 || len(user.Name) == 0 || len(user.Surname) == 0 || len(user.Patronymic) == 0 {
 		log.Error("the insert request was not executed")
-		log.Debug("incorrect length of persons data: " + "name=" + param1 + " surname=" + param2 + "patronymic=" + param3)
-		w.Write([]byte(`"message": "Insert request failed"`))
+		log.Debug("incorrect length of persons data: " + "name=" + user.Name + " surname=" + user.Surname + "patronymic=" + user.Patronymic)
+
+		models.BadResponseSend(w, "operation failed, wrong users param", 400)
 		return
 	}
 
-	var newPerson postgres.User
-	newPerson.Name = param1
-	newPerson.Surname = param2
-	newPerson.Patronymic = param3
-
-	w.Write([]byte(`"message": "Insert request succes",`))
-	services.CreateDataEncrichment(w, newPerson)
+	services.CreateDataEncrichment(w, user)
 }
 
+// для вывода в сваггер
 type addUser struct {
 	Name       string `json:"name" example:"ivan"`
 	Surname    string `json:"surname" example:"ivanov"`

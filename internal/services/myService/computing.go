@@ -2,12 +2,13 @@ package services
 
 import (
 	"encoding/json"
+	"strconv"
 
 	log "github.com/sirupsen/logrus"
 )
 
 // вывод возраста из json файла
-func AgeComputing(jsonString string) int {
+func AgeComputing(jsonString string) string {
 
 	var instanse messageAge
 	data := []byte(jsonString)
@@ -18,7 +19,7 @@ func AgeComputing(jsonString string) int {
 		log.Debug("error when getting the age in the json file: " + jsonString)
 	}
 
-	return instanse.Age
+	return strconv.Itoa(instanse.Age)
 }
 
 // вывод пола из json файла

@@ -1,8 +1,7 @@
 package app
 
 import (
-	"encoding/json"
-	postgres "modular/internal/models"
+	"modular/internal/models"
 	services "modular/internal/services/myService"
 	"net/http"
 	"strconv"
@@ -24,20 +23,15 @@ func deleteGetRequest(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Content-Type", "application/json")
 	log.Info("receiving a delete request")
 
-	param1 := r.FormValue("id")
-	inter, err := strconv.Atoi(param1)
-	if err != nil {
+	// получение айди, и если айди не может конвертится в число, то выдаем ошибку
+	id := r.FormValue("id")
+	if _, err := strconv.Atoi(id); err != nil {
 		log.Error("the delete request was not executed")
-		log.Debug("id couldn't convert to a number: " + param1)
+		log.Debug("id couldn't convert to a number: " + id)
 
-		errResp := postgres.ErrorResponse{
-			Message: "Invalid Input",
-			Code:    400,
-		}
-		json.NewEncoder(w).Encode(errResp)
-
+		models.BadResponseSend(w, "operation failed, wrong id = "+id, 400)
 		return
 	}
 
-	services.DeleteDataEncrichment(w, inter)
+	services.DeleteDataEncrichment(w, id)
 }

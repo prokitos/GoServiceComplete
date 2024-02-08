@@ -101,6 +101,12 @@ const docTemplate = `{
                 "summary": "Show persons in users",
                 "parameters": [
                     {
+                        "type": "string",
+                        "description": "Sort records",
+                        "name": "sort",
+                        "in": "query"
+                    },
+                    {
                         "type": "integer",
                         "description": "Show max limit records",
                         "name": "limit",
@@ -173,6 +179,73 @@ const docTemplate = `{
                 }
             }
         },
+        "/test/{id}": {
+            "get": {
+                "description": "Show persons in users",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Show persons in users",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Show users by id",
+                        "name": "id",
+                        "in": "path"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/app.showUser"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid username supplied"
+                    },
+                    "404": {
+                        "description": "User not found"
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete persons by id from users",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Delete persons by id from users",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "delete user",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "400": {
+                        "description": "Invalid username supplied"
+                    },
+                    "404": {
+                        "description": "User not found"
+                    }
+                }
+            }
+        },
         "/update": {
             "put": {
                 "description": "Update persons in users",
@@ -187,13 +260,6 @@ const docTemplate = `{
                 ],
                 "summary": "Update persons in users",
                 "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Update user",
-                        "name": "id",
-                        "in": "query",
-                        "required": true
-                    },
                     {
                         "description": "Update user",
                         "name": "user",
@@ -271,6 +337,10 @@ const docTemplate = `{
         "app.updateUser": {
             "type": "object",
             "properties": {
+                "id": {
+                    "type": "string",
+                    "example": "5"
+                },
                 "name": {
                     "type": "string",
                     "example": "ivan"

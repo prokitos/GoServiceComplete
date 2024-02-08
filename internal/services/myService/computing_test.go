@@ -8,25 +8,25 @@ func TestJsonAge(t *testing.T) {
 		testNum    int
 		name       string
 		jsonString string
-		expected   int
+		expected   string
 	}{
 		{
 			testNum:    1,
 			name:       "test 1",
 			jsonString: "{\"count\":128925,\"name\":\"eva\",\"age\":59}",
-			expected:   59,
+			expected:   "59",
 		},
 		{
 			testNum:    2,
 			name:       "test 2",
 			jsonString: "{\"count\":128925,\"name\":\"alex\",\"age\":42}",
-			expected:   42,
+			expected:   "42",
 		},
 		{
 			testNum:    3,
 			name:       "test 3",
 			jsonString: "{\"count\":128925,\"name\":\"gggdsgr\",\"age\":0}",
-			expected:   0,
+			expected:   "0",
 		},
 	}
 

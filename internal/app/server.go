@@ -20,8 +20,8 @@ func MainServer() {
 	srv := &http.Server{
 		Handler:      router,
 		Addr:         ":8888",
-		WriteTimeout: 15 * time.Second,
-		ReadTimeout:  15 * time.Second,
+		WriteTimeout: 5 * time.Second,
+		ReadTimeout:  5 * time.Second,
 	}
 
 	log.Fatal(srv.ListenAndServe())
@@ -37,6 +37,9 @@ func routers() *mux.Router {
 	router.HandleFunc("/insert", insertGetRequest).Methods(http.MethodPost)
 	router.HandleFunc("/update", updateGetRequest).Methods(http.MethodPut)
 	router.HandleFunc("/show", showsSpecGetRequest).Methods(http.MethodGet)
+
+	router.HandleFunc("/test/{id}", showByIdRequest).Methods(http.MethodGet)
+	router.HandleFunc("/test/{id}", delByIdRequest).Methods(http.MethodDelete)
 
 	return router
 }

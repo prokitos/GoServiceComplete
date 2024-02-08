@@ -1,7 +1,7 @@
 package app
 
 import (
-	postgres "modular/internal/models"
+	"modular/internal/models"
 	services "modular/internal/services/myService"
 	"net/http"
 	"strconv"
@@ -15,9 +15,10 @@ import (
 // @Tags users
 // @Accept  json
 // @Produce  json
+// @Param sort query string false "Sort records"
 // @Param limit query int false "Show max limit records"
 // @Param offset query int false "Show records with current offset"
-// @Param user query showUser false "Show user"
+// @Param user query showUser false "Update user"
 // @Failure 400 "Invalid username supplied"
 // @Failure 404 "User not found"
 // @Success 200 {object} showUser "successful operation"
@@ -26,58 +27,49 @@ func showsSpecGetRequest(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Content-Type", "application/json")
 	log.Info("receiving a show request")
 
-	var sortPerson string = ""
-	var searchPerson postgres.User
-	// searchPerson.Id = 0
-	// searchPerson.Age = 0
+	var user models.User
+	user.Id = r.FormValue("id")
+	user.Age = r.FormValue("age")
+	user.Name = r.FormValue("name")
+	user.Surname = r.FormValue("surname")
+	user.Patronymic = r.FormValue("patronymic")
+	user.Nationality = r.FormValue("nationality")
+	user.Sex = r.FormValue("gender")
 
-	// данные для пагинации
-	param1 := r.FormValue("limit")
-	param2 := r.FormValue("offset")
-	if param1 == "" {
-		param1 = "0"
-	}
-	if param2 == "" {
-		param2 = "0"
-	}
-	limit, err := strconv.Atoi(param1)
-	offset, err2 := strconv.Atoi(param2)
-	if err != nil || err2 != nil {
+	var sortPerson string = r.FormValue("sort")
+	var offset string = r.FormValue("offset")
+	var limit string = r.FormValue("limit")
+
+	if _, err := strconv.Atoi(offset); offset != "" && err != nil {
 		log.Error("the show request was not executed")
-		log.Debug("limit or offset params couldn't convert to a number: limit=" + param1 + " offset=" + param2)
-		w.Write([]byte(`"message": "Show request failed"`))
+		log.Debug("offset params couldn't convert to a number, offset = " + offset)
+
+		models.BadResponseSend(w, "operation failed, wrong offset = "+offset, 400)
+		return
+	}
+	if _, err := strconv.Atoi(limit); limit != "" && err != nil {
+		log.Error("the show request was not executed")
+		log.Debug("limit params couldn't convert to a number, limit = " + limit)
+
+		models.BadResponseSend(w, "operation failed, wrong limit = "+limit, 400)
+		return
+	}
+	if _, err := strconv.Atoi(user.Id); user.Id != "" && err != nil {
+		log.Error("the show request was not executed")
+		log.Debug("id params couldn't convert to a number, id = " + user.Id)
+
+		models.BadResponseSend(w, "operation failed, wrong id = "+user.Id, 400)
+		return
+	}
+	if _, err := strconv.Atoi(user.Age); user.Age != "" && err != nil {
+		log.Error("the show request was not executed")
+		log.Debug("age params couldn't convert to a number, age = " + user.Age)
+
+		models.BadResponseSend(w, "operation failed, wrong age = "+user.Age, 400)
 		return
 	}
 
-	// данные для вывода пользователя с определенным условием
-	param3 := r.FormValue("id")
-	param4 := r.FormValue("age")
-	if param3 == "" {
-		param3 = "-1"
-	}
-	if param4 == "" {
-		param4 = "-1"
-	}
-	ids, err := strconv.Atoi(param3)
-	ages, err2 := strconv.Atoi(param4)
-	if err != nil || err2 != nil {
-		log.Error("the show request was not executed")
-		log.Debug("id or age couldn't convert to a number: id=" + param3 + " age=" + param4)
-		w.Write([]byte(`"message": "Show request failed"`))
-		return
-	}
-
-	searchPerson.Id = ids
-	searchPerson.Age = ages
-	searchPerson.Name = r.FormValue("name")
-	searchPerson.Surname = r.FormValue("surname")
-	searchPerson.Patronymic = r.FormValue("patronymic")
-	searchPerson.Nationality = r.FormValue("nationality")
-	searchPerson.Sex = r.FormValue("sex")
-	sortPerson = r.FormValue("sort")
-
-	w.Write([]byte(`"message": "Show request succes",`))
-	services.ShowSpecData(w, offset, limit, sortPerson, searchPerson)
+	services.ShowSpecData(w, offset, limit, sortPerson, user)
 }
 
 type showUser struct {
