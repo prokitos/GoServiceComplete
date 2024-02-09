@@ -26,16 +26,32 @@ func updateGetRequest(w http.ResponseWriter, r *http.Request) {
 	log.Info("receiving a update request")
 
 	reqBody, _ := io.ReadAll(r.Body)
+	var userTemp models.UserTemp
+	userTemp.Id = -1
+	userTemp.Age = -1
+	json.Unmarshal(reqBody, &userTemp)
+
 	var user models.User
 	json.Unmarshal(reqBody, &user)
+	user.Name = userTemp.Name
+	user.Surname = userTemp.Surname
+	user.Patronymic = userTemp.Patronymic
+	user.Sex = userTemp.Sex
+	user.Nationality = userTemp.Nationality
+
+	if user.Id == "" {
+		user.Id = strconv.Itoa(userTemp.Id)
+	}
+	if user.Age == "" {
+		user.Age = strconv.Itoa(userTemp.Age)
+	}
 
 	if _, err := strconv.Atoi(user.Id); err != nil {
 		models.BadResponseSend(w, "operation failed, wrong id = "+user.Id, 400)
 		return
 	}
-
-	if _, err := strconv.Atoi(user.Age); user.Age != "" && err != nil {
-		models.BadResponseSend(w, "operation failed, wrong Age = "+user.Age, 400)
+	if _, err := strconv.Atoi(user.Age); err != nil {
+		models.BadResponseSend(w, "operation failed, wrong age = "+user.Age, 400)
 		return
 	}
 
@@ -51,7 +67,7 @@ func updateGetRequest(w http.ResponseWriter, r *http.Request) {
 }
 
 type updateUser struct {
-	Id         string `json:"id" example:"5"`
+	Id         int    `json:"id" example:"50"`
 	Name       string `json:"name" example:"ivan"`
 	Surname    string `json:"surname" example:"ivanov"`
 	Patronymic string `json:"patronymic" example:"ivanovich"`

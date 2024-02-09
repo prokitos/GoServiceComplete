@@ -10,3 +10,13 @@ type User struct {
 	Sex         string
 	Nationality string
 }
+
+type UserTemp struct {
+	Id          int
+	Name        string
+	Surname     string
+	Patronymic  string
+	Age         int
+	Sex         string
+	Nationality string
+}

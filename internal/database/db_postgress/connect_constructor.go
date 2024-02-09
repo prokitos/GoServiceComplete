@@ -28,7 +28,7 @@ func ConStringUpdate(user postgres.User) string {
 	if user.Nationality != "" {
 		additional += " nationality = '" + user.Nationality + "' ,"
 	}
-	if user.Age != "" {
+	if user.Age != "-1" {
 		additional += " age = '" + user.Age + "' ,"
 	}
 

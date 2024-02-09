@@ -338,8 +338,8 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "id": {
-                    "type": "string",
-                    "example": "5"
+                    "type": "integer",
+                    "example": 50
                 },
                 "name": {
                     "type": "string",

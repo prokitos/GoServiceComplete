@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"io"
 	"modular/internal/models"
-	postgres "modular/internal/models"
 	services "modular/internal/services/myService"
 	"net/http"
 
@@ -25,7 +24,7 @@ func insertGetRequest(w http.ResponseWriter, r *http.Request) {
 	log.Info("receiving a create request")
 
 	reqBody, _ := io.ReadAll(r.Body)
-	var user postgres.User
+	var user models.User
 	json.Unmarshal(reqBody, &user)
 
 	if len(user.Name) > 40 || len(user.Surname) > 40 || len(user.Patronymic) > 40 || len(user.Name) == 0 || len(user.Surname) == 0 || len(user.Patronymic) == 0 {

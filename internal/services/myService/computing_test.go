@@ -34,10 +34,10 @@ func TestJsonAge(t *testing.T) {
 
 		result := AgeComputing(testCase.jsonString)
 
-		t.Logf("calling jsonAgeGet №%d, get %d", i, result)
+		t.Logf("calling jsonAgeGet №%d, get %s", i, result)
 
 		if result != testCase.expected {
-			t.Errorf("incorrecnt result. Expect %d, get %d", testCase.expected, result)
+			t.Errorf("incorrecnt result. Expect %s, get %s", testCase.expected, result)
 		}
 
 	}

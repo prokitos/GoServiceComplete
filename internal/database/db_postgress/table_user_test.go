@@ -22,21 +22,21 @@ func TestExecuteDB(t *testing.T) {
 			name:    "test insert",
 			conn:    "insert into testuser (name, surname, patronymic, age, sex, nationality) values ('denis', 'denisov', 'denisovich', '50', 'male', 'RU')",
 			oper:    "Insert",
-			want:    "\"status\": \"Insert success\",\"affected_rows\": \"1\"",
+			want:    `{"message":"success operation","code":200,"affected_rows":1}` + "\n",
 		},
 		{
 			testNum: 2,
 			name:    "test update",
 			conn:    "update testuser set sex = 'female' , nationality = 'RU' , age = '50' where id = '2'",
 			oper:    "Update",
-			want:    "\"status\": \"Update success\",\"affected_rows\": \"1\"",
+			want:    `{"message":"success operation","code":200,"affected_rows":1}` + "\n",
 		},
 		{
 			testNum: 3,
 			name:    "test delete",
 			conn:    "delete from testuser where id = '99'",
 			oper:    "Delete",
-			want:    "\"status\": \"Delete success\",\"affected_rows\": \"0\"",
+			want:    `{"message":"operation failed, nothing to execute","code":404}` + "\n",
 		},
 	}
 
@@ -70,13 +70,13 @@ func TestShowDB(t *testing.T) {
 			testNum: 1,
 			name:    "show id = 1",
 			conn:    "select * from testuser where id = '1'",
-			want:    "{{\"id\": \"1\",\"name\": \"denis\",\"surname\": \"denisov\",\"patronymic\": \"denisovich\",\"age\": \"50\",\"gender\": \"male\",\"nationality\": \"RU\"},}",
+			want:    `[{"Id":"1","Name":"denis","Surname":"denisov","Patronymic":"denisovich","Age":"50","Sex":"male","Nationality":"RU"}]` + "\n",
 		},
 		{
 			testNum: 2,
 			name:    "offset 2 limit 1",
 			conn:    "select * from testuser order by id offset 2 limit 1",
-			want:    "{{\"id\": \"3\",\"name\": \"test\",\"surname\": \"denisov\",\"patronymic\": \"denisovich\",\"age\": \"50\",\"gender\": \"male\",\"nationality\": \"RU\"},}",
+			want:    `[{"Id":"3","Name":"test","Surname":"denisov","Patronymic":"denisovich","Age":"50","Sex":"male","Nationality":"RU"}]` + "\n",
 		},
 	}
 

@@ -41,8 +41,8 @@ definitions:
   app.updateUser:
     properties:
       id:
-        example: "5"
-        type: string
+        example: 50
+        type: integer
       name:
         example: ivan
         type: string

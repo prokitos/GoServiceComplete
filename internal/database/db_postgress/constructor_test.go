@@ -120,13 +120,13 @@ func TestShowConstructor(t *testing.T) {
 		{
 			testNum: 1,
 			name:    "show all",
-			char:    postgres.User{Id: "-1", Age: "-1"},
+			char:    postgres.User{Id: "", Age: ""},
 			want:    "select * from users",
 		},
 		{
 			testNum: 2,
 			name:    "show all by order with limit and offset",
-			char:    postgres.User{Id: "-1", Age: "-1"},
+			char:    postgres.User{Id: "", Age: ""},
 			offset:  "2",
 			limit:   "10",
 			sort:    "name",
@@ -135,7 +135,7 @@ func TestShowConstructor(t *testing.T) {
 		{
 			testNum: 3,
 			name:    "normal query",
-			char:    postgres.User{Name: "denis", Surname: "denisov", Id: "-1", Age: "-1"},
+			char:    postgres.User{Name: "denis", Surname: "denisov", Id: "", Age: ""},
 			sort:    "id",
 			want:    "select * from users where name = 'denis' and surname = 'denisov' order by id",
 		},

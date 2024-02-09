@@ -1,6 +1,7 @@
 package app
 
 import (
+	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -26,7 +27,7 @@ func TestDelete(t *testing.T) {
 			method:     http.MethodDelete,
 			param:      "id",
 			value:      "5",
-			want:       `"message": "Delete request succes","status": "Null execute"`,
+			want:       `{"message":"operation failed, does not connect to database","code":400}` + "\n",
 			statusCode: http.StatusOK,
 		},
 		{
@@ -35,7 +36,7 @@ func TestDelete(t *testing.T) {
 			method:     http.MethodDelete,
 			param:      "id",
 			value:      "",
-			want:       `"message": "Delete request failed"`,
+			want:       `{"message":"operation failed, wrong id = ","code":400}` + "\n",
 			statusCode: http.StatusOK,
 		},
 		{
@@ -44,7 +45,7 @@ func TestDelete(t *testing.T) {
 			method:     http.MethodDelete,
 			param:      "id",
 			value:      "ddf",
-			want:       `"message": "Delete request failed"`,
+			want:       `{"message":"operation failed, wrong id = ddf","code":400}` + "\n",
 			statusCode: http.StatusOK,
 		},
 	}
@@ -89,7 +90,7 @@ func TestInsert(t *testing.T) {
 			method:     http.MethodPost,
 			param:      []string{"name", "surname", "patronymic"},
 			value:      []string{"anton", "chehov", "ivanovich"},
-			want:       `"message": "Insert request succes","status": "Null execute"`,
+			want:       `{"message":"operation failed, does not connect to database","code":400}` + "\n",
 			statusCode: http.StatusOK,
 		},
 		{
@@ -98,7 +99,7 @@ func TestInsert(t *testing.T) {
 			method:     http.MethodPost,
 			param:      []string{"name", "surname", "patronymic"},
 			value:      []string{"", "chehov", "ivanovich"},
-			want:       `"message": "Insert request failed"`,
+			want:       `{"message":"operation failed, wrong users param","code":400}` + "\n",
 			statusCode: http.StatusOK,
 		},
 		{
@@ -107,7 +108,7 @@ func TestInsert(t *testing.T) {
 			method:     http.MethodPost,
 			param:      []string{"name", "surname", "patronymic"},
 			value:      []string{"anton", "", ""},
-			want:       `"message": "Insert request failed"`,
+			want:       `{"message":"operation failed, wrong users param","code":400}` + "\n",
 			statusCode: http.StatusOK,
 		},
 		{
@@ -116,7 +117,7 @@ func TestInsert(t *testing.T) {
 			method:     http.MethodPost,
 			param:      []string{"name", "surname", "patronymic"},
 			value:      []string{"antonnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn", "chehov", "ivanovich"},
-			want:       `"message": "Insert request failed"`,
+			want:       `{"message":"operation failed, wrong users param","code":400}` + "\n",
 			statusCode: http.StatusOK,
 		},
 		{
@@ -125,20 +126,24 @@ func TestInsert(t *testing.T) {
 			method:     http.MethodPost,
 			param:      []string{"name", "surname", "patronymic"},
 			value:      []string{"ivan", "antonnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnov", "nikolaevich"},
-			want:       `"message": "Insert request failed"`,
+			want:       `{"message":"operation failed, wrong users param","code":400}` + "\n",
 			statusCode: http.StatusOK,
 		},
 	}
 
 	for _, tc := range testTable {
 		rr := httptest.NewRecorder()
-		req := httptest.NewRequest(tc.method, "/insert", strings.NewReader(tc.body))
 
-		params := url.Values{}
+		kvPairs := make(map[string]string)
 		for i := 0; i < len(tc.param); i++ {
-			params.Add(tc.param[i], tc.value[i])
+			kvPairs[tc.param[i]] = tc.value[i]
 		}
-		req.URL.RawQuery = params.Encode()
+		postJson, err := json.Marshal(kvPairs)
+		if err != nil {
+			panic(err)
+		}
+
+		req := httptest.NewRequest(tc.method, "/insert", strings.NewReader(string(postJson)))
 
 		handler := http.HandlerFunc(insertGetRequest)
 		handler.ServeHTTP(rr, req)
@@ -172,7 +177,7 @@ func TestUpdate(t *testing.T) {
 			method:     http.MethodPost,
 			param:      []string{"id", "name", "surname", "patronymic", "age", "sex", "nationality"},
 			value:      []string{"9", "anton", "chehov", "ivanovich", "45", "male", "RU"},
-			want:       `"message": "Update request succes","status": "Null execute"`,
+			want:       `{"message":"operation failed, does not connect to database","code":400}` + "\n",
 			statusCode: http.StatusOK,
 		},
 		{
@@ -181,7 +186,7 @@ func TestUpdate(t *testing.T) {
 			method:     http.MethodPost,
 			param:      []string{"id", "name", "surname", "patronymic", "age", "sex", "nationality"},
 			value:      []string{"", "anton", "chehov", "ivanovich", "45", "male", "RU"},
-			want:       `"message": "Update request failed"`,
+			want:       `{"message":"operation failed, does not connect to database","code":400}` + "\n",
 			statusCode: http.StatusOK,
 		},
 		{
@@ -190,7 +195,7 @@ func TestUpdate(t *testing.T) {
 			method:     http.MethodPost,
 			param:      []string{"id", "name", "surname", "patronymic", "age", "sex", "nationality"},
 			value:      []string{"9", "", "", "ivanovich", "45", "male", "RU"},
-			want:       `"message": "Update request succes","status": "Null execute"`,
+			want:       `{"message":"operation failed, does not connect to database","code":400}` + "\n",
 			statusCode: http.StatusOK,
 		},
 		{
@@ -199,7 +204,7 @@ func TestUpdate(t *testing.T) {
 			method:     http.MethodPost,
 			param:      []string{"id", "name", "surname", "patronymic", "age", "sex", "nationality"},
 			value:      []string{"9", "anton", "chehov", "ivanovich", "", "male", ""},
-			want:       `"message": "Update request succes","status": "Null execute"`,
+			want:       `{"message":"operation failed, does not connect to database","code":400}` + "\n",
 			statusCode: http.StatusOK,
 		},
 		{
@@ -208,7 +213,7 @@ func TestUpdate(t *testing.T) {
 			method:     http.MethodPost,
 			param:      []string{"id", "name", "surname", "patronymic", "age", "sex", "nationality"},
 			value:      []string{"gav", "anton", "chehov", "ivanovich", "44", "male", "RU"},
-			want:       `"message": "Update request failed"`,
+			want:       `{"message":"operation failed, wrong id = gav","code":400}` + "\n",
 			statusCode: http.StatusOK,
 		},
 		{
@@ -217,20 +222,24 @@ func TestUpdate(t *testing.T) {
 			method:     http.MethodPost,
 			param:      []string{"id", "age"},
 			value:      []string{"9", "56"},
-			want:       `"message": "Update request succes","status": "Null execute"`,
+			want:       `{"message":"operation failed, does not connect to database","code":400}` + "\n",
 			statusCode: http.StatusOK,
 		},
 	}
 
 	for _, tc := range testTable {
 		rr := httptest.NewRecorder()
-		req := httptest.NewRequest(tc.method, "/update", strings.NewReader(tc.body))
 
-		params := url.Values{}
+		kvPairs := make(map[string]string)
 		for i := 0; i < len(tc.param); i++ {
-			params.Add(tc.param[i], tc.value[i])
+			kvPairs[tc.param[i]] = tc.value[i]
 		}
-		req.URL.RawQuery = params.Encode()
+		postJson, err := json.Marshal(kvPairs)
+		if err != nil {
+			panic(err)
+		}
+
+		req := httptest.NewRequest(tc.method, "/update", strings.NewReader(string(postJson)))
 
 		handler := http.HandlerFunc(updateGetRequest)
 		handler.ServeHTTP(rr, req)
@@ -264,7 +273,7 @@ func TestShow(t *testing.T) {
 			method:     http.MethodGet,
 			param:      []string{"id", "sort"},
 			value:      []string{"dfhd", "id"},
-			want:       `"message": "Show request failed"`,
+			want:       `{"message":"operation failed, wrong id = dfhd","code":400}` + "\n",
 			statusCode: http.StatusOK,
 		},
 		{
@@ -273,7 +282,7 @@ func TestShow(t *testing.T) {
 			method:     http.MethodGet,
 			param:      []string{"name", "limit", "sort"},
 			value:      []string{"anton", "5", "id"},
-			want:       `"message": "Show request succes","status": "Null execute"`,
+			want:       `{"message":"operation failed, does not connect to database","code":400}` + "\n",
 			statusCode: http.StatusOK,
 		},
 		{
@@ -282,7 +291,7 @@ func TestShow(t *testing.T) {
 			method:     http.MethodGet,
 			param:      []string{},
 			value:      []string{},
-			want:       `"message": "Show request succes","status": "Null execute"`,
+			want:       `{"message":"operation failed, does not connect to database","code":400}` + "\n",
 			statusCode: http.StatusOK,
 		},
 		{
@@ -291,7 +300,7 @@ func TestShow(t *testing.T) {
 			method:     http.MethodGet,
 			param:      []string{"id", "name", "surname", "patronymic", "age", "sex", "nationality", "limit", "offset", "sort"},
 			value:      []string{"5", "anton", "chehov", "ivanovich", "45", "male", "RU", "5", "5", "43634"},
-			want:       `"message": "Show request succes","status": "Null execute"`,
+			want:       `{"message":"operation failed, does not connect to database","code":400}` + "\n",
 			statusCode: http.StatusOK,
 		},
 		{
@@ -300,7 +309,7 @@ func TestShow(t *testing.T) {
 			method:     http.MethodGet,
 			param:      []string{"id"},
 			value:      []string{"7"},
-			want:       `"message": "Show request succes","status": "Null execute"`,
+			want:       `{"message":"operation failed, does not connect to database","code":400}` + "\n",
 			statusCode: http.StatusOK,
 		},
 		{
@@ -309,7 +318,7 @@ func TestShow(t *testing.T) {
 			method:     http.MethodGet,
 			param:      []string{"name"},
 			value:      []string{"anton"},
-			want:       `"message": "Show request succes","status": "Null execute"`,
+			want:       `{"message":"operation failed, does not connect to database","code":400}` + "\n",
 			statusCode: http.StatusOK,
 		},
 		{
@@ -318,7 +327,7 @@ func TestShow(t *testing.T) {
 			method:     http.MethodGet,
 			param:      []string{"age", "sex"},
 			value:      []string{"45", "female"},
-			want:       `"message": "Show request succes","status": "Null execute"`,
+			want:       `{"message":"operation failed, does not connect to database","code":400}` + "\n",
 			statusCode: http.StatusOK,
 		},
 	}
@@ -350,35 +359,31 @@ func TestShow(t *testing.T) {
 // valide http links test
 func TestHttpConnect(t *testing.T) {
 
-	testTable := []struct {
-		testNum int
-		method  string
-		path    string
-		functs  any
-	}{
-		{
-			testNum: 1,
-			method:  "POST",
-			path:    "/insert",
-			functs:  deleteGetRequest,
-		},
-		{
-			testNum: 2,
-			method:  "GET",
-			path:    "/show",
-			functs:  showsSpecGetRequest,
-		},
+	req1, err := http.NewRequest("DELETE", "/delete", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	rr1 := newRequestRecorder(req1, "DELETE", "/delete", deleteGetRequest)
+	if rr1.Code != 200 {
+		t.Error("Expected response code to be 200")
 	}
 
-	for _, tc := range testTable {
-		req, err := http.NewRequest(tc.method, tc.path, nil)
-		if err != nil {
-			t.Fatal(err)
-		}
-		rr := newRequestRecorder(req, tc.method, tc.path, deleteGetRequest)
-		if rr.Code != 200 {
-			t.Error("Expected response code to be 200")
-		}
+	req2, err := http.NewRequest("DELETE", "/delete", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	rr2 := newRequestRecorder(req2, "GET", "/show", showsSpecGetRequest)
+	if rr2.Code != 200 {
+		t.Error("Expected response code to be 200")
+	}
+
+	req3, err := http.NewRequest("DELETE", "/delete", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	rr3 := newRequestRecorder(req3, "POST", "/insert", insertGetRequest)
+	if rr3.Code != 200 {
+		t.Error("Expected response code to be 200")
 	}
 
 }
