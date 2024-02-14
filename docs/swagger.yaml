@@ -1,5 +1,12 @@
 basePath: /
 definitions:
+  app.Credential:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    type: object
   app.addUser:
     properties:
       name:
@@ -85,6 +92,26 @@ paths:
         "404":
           description: User not found
       summary: Delete persons by id from users
+      tags:
+      - users
+  /getToken:
+    post:
+      consumes:
+      - application/json
+      description: Get Token
+      parameters:
+      - description: get token
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/app.Credential'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: successful operation
+      summary: Get Token
       tags:
       - users
   /insert:
@@ -235,4 +262,27 @@ paths:
       summary: Update persons in users
       tags:
       - users
+  /useToken:
+    post:
+      consumes:
+      - application/json
+      description: Test tokens
+      produces:
+      - application/json
+      responses:
+        "400":
+          description: Invalid username supplied
+        "404":
+          description: User not found
+      security:
+      - Bearer: []
+      summary: test tokens
+      tags:
+      - users
+securityDefinitions:
+  Bearer:
+    description: Type "Bearer" followed by a space and JWT token.
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

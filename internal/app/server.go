@@ -38,6 +38,10 @@ func routers() *mux.Router {
 	router.HandleFunc("/update", updateGetRequest).Methods(http.MethodPut)
 	router.HandleFunc("/show", showsSpecGetRequest).Methods(http.MethodGet)
 
+	router.HandleFunc("/singIn", signIn).Methods(http.MethodPost)
+	router.HandleFunc("/getToken", getToken).Methods(http.MethodPost)
+	router.HandleFunc("/useToken", GetAccName).Methods(http.MethodPost)
+
 	router.HandleFunc("/test/{id}", showByIdRequest).Methods(http.MethodGet)
 	router.HandleFunc("/test/{id}", delByIdRequest).Methods(http.MethodDelete)
 
