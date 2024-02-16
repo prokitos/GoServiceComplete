@@ -11,7 +11,8 @@ import (
 	"github.com/golang-jwt/jwt"
 )
 
-var mySigningKey = []byte("secret")
+var mySigningKey = []byte("basic_key")
+var mySigningKey2 = []byte("super_mega_key")
 
 type Credential struct {
 	Username string `json:"username"`
@@ -19,11 +20,17 @@ type Credential struct {
 }
 type Token struct {
 	Username string `json:"username"`
+	Role     string `json:"role"`
 	jwt.StandardClaims
 }
 
 var userdb = map[string]string{
 	"user1": "password123",
+}
+
+type TokenReturn struct {
+	Authorization string `json:"Authorization"`
+	Refresher     string `json:"Refresher"`
 }
 
 func loadSecretKey() {
@@ -62,9 +69,9 @@ func getToken(w http.ResponseWriter, r *http.Request) {
 	// создаем токен
 	var tokenObj = Token{
 		Username: creds.Username,
+		Role:     "Admin 3 level",
 		StandardClaims: jwt.StandardClaims{
-			// Enter expiration in milisecond
-			ExpiresAt: time.Now().Add(10 * time.Minute).Unix(),
+			ExpiresAt: time.Now().Add(1 * time.Minute).Unix(),
 		},
 	}
 
@@ -75,17 +82,86 @@ func getToken(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	json.NewEncoder(w).Encode(tokenString)
+
+	var tokenObj2 = Token{
+		Username: creds.Username,
+		Role:     "Admin 3 level",
+		StandardClaims: jwt.StandardClaims{
+			ExpiresAt: time.Now().Add(2 * time.Minute).Unix(),
+		},
+	}
+
+	token2 := jwt.NewWithClaims(jwt.SigningMethodHS256, tokenObj2)
+
+	refreshTokenString, err := token2.SignedString(mySigningKey2)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	responser := TokenReturn{
+		Authorization: tokenString,
+		Refresher:     refreshTokenString,
+	}
+
+	json.NewEncoder(w).Encode(responser)
+
 }
 
-func ValidateToken(bearerToken string) (*jwt.Token, error) {
+func RenewToken(w http.ResponseWriter, r *http.Request) {
+
+	refreshToken := r.Header.Get("Refresher")
+
+	token, err := ValidateToken(refreshToken, mySigningKey2)
+	if err != nil {
+		// check if Error is Signature Invalid Error
+		if err == jwt.ErrSignatureInvalid {
+			// return the Unauthorized Status
+			w.WriteHeader(http.StatusUnauthorized)
+			return
+		}
+		// Return the Bad Request for any other error
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	if !token.Valid {
+		// return the Unauthoried Status for expired token
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+
+	user := token.Claims.(*Token)
+
+	var tokenObj = Token{
+		Username: user.Username,
+		Role:     user.Role,
+		StandardClaims: jwt.StandardClaims{
+			ExpiresAt: time.Now().Add(1 * time.Minute).Unix(),
+		},
+	}
+
+	newtoken := jwt.NewWithClaims(jwt.SigningMethodHS256, tokenObj)
+
+	tokenString, err := newtoken.SignedString(mySigningKey)
+
+	responser := TokenReturn{
+		Authorization: tokenString,
+		Refresher:     refreshToken,
+	}
+
+	json.NewEncoder(w).Encode(responser)
+
+}
+
+func ValidateToken(bearerToken string, secretKey []byte) (*jwt.Token, error) {
 
 	// format the token string
 	tokenString := strings.Split(bearerToken, " ")[1]
 
 	// Parse the token with tokenObj
 	token, err := jwt.ParseWithClaims(tokenString, &Token{}, func(token *jwt.Token) (interface{}, error) {
-		return mySigningKey, nil
+		return secretKey, nil
 	})
 
 	// return token and err
@@ -106,7 +182,7 @@ func GetAccName(w http.ResponseWriter, r *http.Request) {
 
 	bearerToken := r.Header.Get("Authorization")
 
-	token, err := ValidateToken(bearerToken)
+	token, err := ValidateToken(bearerToken, mySigningKey)
 	if err != nil {
 		// check if Error is Signature Invalid Error
 		if err == jwt.ErrSignatureInvalid {
@@ -128,5 +204,5 @@ func GetAccName(w http.ResponseWriter, r *http.Request) {
 	user := token.Claims.(*Token)
 
 	// send the username Dashboard message
-	json.NewEncoder(w).Encode(fmt.Sprintf("%s Dashboard", user.Username))
+	json.NewEncoder(w).Encode(fmt.Sprintf("%s ; %s ; %s", user.Username, user.Role, bearerToken))
 }
