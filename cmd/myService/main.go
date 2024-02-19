@@ -5,7 +5,6 @@ import (
 	"os"
 
 	log "github.com/sirupsen/logrus"
-	"golang.org/x/sys/windows"
 
 	_ "modular/docs"
 )
@@ -39,17 +38,17 @@ func main() {
 }
 
 func PauseDisable() {
-	winConsole := windows.Handle(os.Stdin.Fd())
-	var mode uint32
-	err := windows.GetConsoleMode(winConsole, &mode)
-	if err != nil {
-		log.Println(err)
-	}
-	mode &^= windows.ENABLE_QUICK_EDIT_MODE
-	err = windows.SetConsoleMode(winConsole, mode)
-	if err != nil {
-		log.Println(err)
-	}
+	// winConsole := windows.Handle(os.Stdin.Fd())
+	// var mode uint32
+	// err := windows.GetConsoleMode(winConsole, &mode)
+	// if err != nil {
+	// 	log.Println(err)
+	// }
+	// mode &^= windows.ENABLE_QUICK_EDIT_MODE
+	// err = windows.SetConsoleMode(winConsole, mode)
+	// if err != nil {
+	// 	log.Println(err)
+	// }
 }
 
 // Записывать логи в файл
