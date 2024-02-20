@@ -10,12 +10,14 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+var envConnvertion string = "internal/config/postgress.env"
+
 // Обновление записи
 func UpdateData(w http.ResponseWriter, user postgres.User) {
 	log.Info("trying to update records with id " + user.Id)
 
 	var conn string = table_user.ConStringUpdate(user)
-	dbCon := table_user.ConnectToDb("internal/config/postgress.env")
+	dbCon := table_user.ConnectToDb(envConnvertion)
 	table_user.ExecuteToDB(dbCon, w, conn, "Update")
 }
 
@@ -24,15 +26,16 @@ func DeleteDataEncrichment(w http.ResponseWriter, id string) {
 	log.Info("trying to delete records with id " + id)
 
 	var conn string = table_user.ConStringDelete(id)
-	dbCon := table_user.ConnectToDb("internal/config/postgress.env")
+	dbCon := table_user.ConnectToDb(envConnvertion)
 	table_user.ExecuteToDB(dbCon, w, conn, "Delete")
 }
 
 // Показать записи
 func ShowSpecData(w http.ResponseWriter, offset string, limit string, sort string, user postgres.User) {
+
 	log.Info("trying to showing data")
 	var conn string = table_user.ConStringShowSpec(offset, limit, sort, user)
-	dbCon := table_user.ConnectToDb("internal/config/postgress.env")
+	dbCon := table_user.ConnectToDb(envConnvertion)
 	table_user.ShowFromDB(dbCon, w, conn)
 }
 
@@ -56,7 +59,7 @@ func CreateDataEncrichment(w http.ResponseWriter, user postgres.User) {
 
 	var conn string = table_user.ConStringInsert(user)
 
-	dbCon := table_user.ConnectToDb("internal/config/postgress.env")
+	dbCon := table_user.ConnectToDb(envConnvertion)
 	table_user.ExecuteToDB(dbCon, w, conn, "Create")
 }
 

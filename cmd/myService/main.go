@@ -7,6 +7,7 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	_ "modular/docs"
+	table_user "modular/internal/database/db_postgress"
 )
 
 // @title User API
@@ -33,8 +34,9 @@ func main() {
 
 	PauseDisable() // отключение заморозки приложения при выделении текста в консоли
 
-	app.MainServer()
+	go table_user.MigrateStart()
 
+	app.MainServer()
 }
 
 func PauseDisable() {
@@ -59,3 +61,13 @@ func enableLogToFile() {
 	}
 	log.SetOutput(file)
 }
+
+// функция которая вызывает миграцию через код
+// func migrateStart() {
+// 	cmd := exec.Command("goose", "-dir", "db/migrations", "postgres", "postgresql://postgres:root@postgresql:5432/postgres?sslmode=disable", "up")
+// 	err := cmd.Run()
+// 	if err != nil {
+// 		println("panic !!!")
+// 	}
+// 	println("Migrate complete")
+// }

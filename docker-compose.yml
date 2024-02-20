@@ -1,0 +1,28 @@
+networks:
+  ps:
+
+
+services:
+  app:
+    image: applink
+    container_name: ps-backend
+    ports:
+      - "127.0.0.1:8888:8888"
+    depends_on:
+      - postgresql
+    networks:
+      - ps
+
+  postgresql:
+    image: postgres:14-alpine
+    container_name: ps-sql
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=root
+    volumes:
+      - ./data:/var/lib/postgresql/data
+    networks:
+      - ps

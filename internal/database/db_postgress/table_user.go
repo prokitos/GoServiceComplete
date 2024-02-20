@@ -8,21 +8,13 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"time"
 
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
+	"github.com/pressly/goose/v3"
 	log "github.com/sirupsen/logrus"
 )
-
-// функция которая вызывает миграцию через код
-// func migrateStart() {
-// 	cmd := exec.Command("goose", "-dir", "db/migrations", "postgres", "postgresql://postgres:root@127.0.0.1:8092/postgres?sslmode=disable", "up")
-// 	err := cmd.Run()
-// 	if err != nil {
-// 		println("panic !!!")
-// 	}
-// 	println("Migrate complete")
-// }
 
 func ConnectToDb(path string) *sql.DB {
 
@@ -30,11 +22,11 @@ func ConnectToDb(path string) *sql.DB {
 
 	godotenv.Load(path)
 
-	envUser := os.Getenv("USER")
-	envPass := os.Getenv("PASS")
-	envHost := os.Getenv("HOST")
-	envPort := os.Getenv("PORT")
-	envName := os.Getenv("NAME")
+	envUser := os.Getenv("User")
+	envPass := os.Getenv("Pass")
+	envHost := os.Getenv("Host")
+	envPort := os.Getenv("Port")
+	envName := os.Getenv("Name")
 
 	connStr := fmt.Sprintf("postgresql://%s:%s@%s:%s/%s?sslmode=disable", envUser, envPass, envHost, envPort, envName)
 	db, err := sql.Open("postgres", connStr)
@@ -46,6 +38,23 @@ func ConnectToDb(path string) *sql.DB {
 	db.Begin()
 
 	return db
+}
+
+func MigrateStart() {
+
+	duration := time.Second * 5
+	time.Sleep(duration)
+
+	db := ConnectToDb("internal/config/postgress.env")
+
+	if err := goose.SetDialect("postgres"); err != nil {
+		panic(err)
+	}
+
+	if err := goose.Up(db, "internal/database/migrations"); err != nil {
+		log.Error("migration connection error")
+		panic(err)
+	}
 }
 
 // вызов операции над таблицей
