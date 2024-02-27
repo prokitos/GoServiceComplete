@@ -76,7 +76,7 @@ func TestShowDB(t *testing.T) {
 			testNum: 2,
 			name:    "offset 2 limit 1",
 			conn:    "select * from testuser order by id offset 2 limit 1",
-			want:    `[{"Id":"3","Name":"test","Surname":"denisov","Patronymic":"denisovich","Age":"50","Sex":"male","Nationality":"RU"}]` + "\n",
+			want:    `[{"Id":"3","Name":"denis","Surname":"denisov","Patronymic":"denisovich","Age":"50","Sex":"male","Nationality":"RU"}]` + "\n",
 		},
 	}
 
@@ -100,7 +100,7 @@ func TestShowDB(t *testing.T) {
 
 func TestConnetion(t *testing.T) {
 
-	res := ConnectToDb("../../config/postgress.env")
+	var res *sql.DB = ConnectToDb("../../config/postgress.env")
 
 	if res.Stats().InUse == 0 {
 		t.Errorf("result wrong at test, does not connect to server")
