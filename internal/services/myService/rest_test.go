@@ -2,6 +2,7 @@ package services
 
 import (
 	"testing"
+	"time"
 )
 
 func TestExternalAPI(t *testing.T) {
@@ -60,6 +61,8 @@ func TestExternalAPI(t *testing.T) {
 			t.Errorf("result wrong at test #%v, got [%v] want [%v]", tc.testNum, res3, tc.nation)
 		}
 
+		duration := time.Second * 5
+		time.Sleep(duration)
 	}
 }
 

@@ -16,6 +16,21 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+func GetConnectString(path string) string {
+
+	godotenv.Load(path)
+
+	envUser := os.Getenv("User")
+	envPass := os.Getenv("Pass")
+	envHost := os.Getenv("Host")
+	envPort := os.Getenv("Port")
+	envName := os.Getenv("Name")
+
+	connStr := fmt.Sprintf("postgresql://%s:%s@%s:%s/%s?sslmode=disable", envUser, envPass, envHost, envPort, envName)
+	return connStr
+
+}
+
 func ConnectToDb(path string) *sql.DB {
 
 	log.Info("connecting to the database")

@@ -42,7 +42,8 @@ func TestExecuteDB(t *testing.T) {
 
 	for _, tc := range testTable {
 
-		connStr := "postgresql://postgres:root@127.0.0.1:8092/postgres?sslmode=disable"
+		connStr := GetConnectString("../../config/postgress.env")
+
 		db, err := sql.Open("postgres", connStr)
 		if err != nil {
 			log.Error("database connection error")
@@ -82,7 +83,7 @@ func TestShowDB(t *testing.T) {
 
 	for _, tc := range testTable {
 
-		connStr := "postgresql://postgres:root@127.0.0.1:8092/postgres?sslmode=disable"
+		connStr := GetConnectString("../../config/postgress.env")
 		db, err := sql.Open("postgres", connStr)
 		if err != nil {
 			log.Error("database connection error")

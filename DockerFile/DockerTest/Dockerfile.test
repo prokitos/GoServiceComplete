@@ -1,0 +1,8 @@
+FROM golang:alpine AS tester
+
+WORKDIR /build
+ADD go.mod .
+COPY . .
+
+FROM tester AS run-test-stage
+CMD CGO_ENABLED=0 go test ./...
