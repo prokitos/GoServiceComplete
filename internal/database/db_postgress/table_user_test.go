@@ -20,21 +20,21 @@ func TestExecuteDB(t *testing.T) {
 		{
 			testNum: 1,
 			name:    "test insert",
-			conn:    "insert into testuser (name, surname, patronymic, age, sex, nationality) values ('denis', 'denisov', 'denisovich', '50', 'male', 'RU')",
+			conn:    "insert into test (name, surname, patronymic, age, sex, nationality) values ('denis', 'denisov', 'denisovich', '50', 'male', 'RU')",
 			oper:    "Insert",
-			want:    `{"message":"success operation","code":200,"affected_rows":1}` + "\n",
+			want:    `{"message":"success operation","code":200,"affected_rows":1} insert` + "\n",
 		},
 		{
 			testNum: 2,
 			name:    "test update",
-			conn:    "update testuser set sex = 'female' , nationality = 'RU' , age = '50' where id = '2'",
+			conn:    "update test set sex = 'female' , nationality = 'RU' , age = '50' where id = '2'",
 			oper:    "Update",
-			want:    `{"message":"success operation","code":200,"affected_rows":1}` + "\n",
+			want:    `{"message":"success operation","code":200,"affected_rows":1} update` + "\n",
 		},
 		{
 			testNum: 3,
 			name:    "test delete",
-			conn:    "delete from testuser where id = '99'",
+			conn:    "delete from test where id = '99'",
 			oper:    "Delete",
 			want:    `{"message":"operation failed, nothing to execute","code":404}` + "\n",
 		},
@@ -70,13 +70,13 @@ func TestShowDB(t *testing.T) {
 		{
 			testNum: 1,
 			name:    "show id = 1",
-			conn:    "select * from testuser where id = '1'",
+			conn:    "select * from test where id = '1'",
 			want:    `[{"Id":"1","Name":"denis","Surname":"denisov","Patronymic":"denisovich","Age":"50","Sex":"male","Nationality":"RU"}]` + "\n",
 		},
 		{
 			testNum: 2,
 			name:    "offset 2 limit 1",
-			conn:    "select * from testuser order by id offset 2 limit 1",
+			conn:    "select * from test order by id offset 2 limit 1",
 			want:    `[{"Id":"3","Name":"denis","Surname":"denisov","Patronymic":"denisovich","Age":"50","Sex":"male","Nationality":"RU"}]` + "\n",
 		},
 	}

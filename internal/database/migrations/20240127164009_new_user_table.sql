@@ -9,6 +9,11 @@ CREATE TABLE IF NOT EXISTS users (
  sex VARCHAR(255),
  nationality VARCHAR(255)
 );
+
+INSERT INTO "users" ("id", "name", "surname", "patronymic","age","sex","nationality") VALUES (1, 'denis', 'denisov', 'denisovich','50','male','RU');
+INSERT INTO "users" ("id", "name", "surname", "patronymic","age","sex","nationality") VALUES (2, 'Bob', 'Cannet', 'Johson','85','male','RU');
+INSERT INTO "users" ("id", "name", "surname", "patronymic","age","sex","nationality") VALUES (3, 'denis', 'denisov', 'denisovich','50','male','RU');
+
 -- +goose StatementEnd
 
 -- +goose Down
