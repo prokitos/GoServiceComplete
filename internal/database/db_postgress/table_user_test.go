@@ -19,24 +19,24 @@ func TestExecuteDB(t *testing.T) {
 	}{
 		{
 			testNum: 1,
-			name:    "test insert",
-			conn:    "insert into test (name, surname, patronymic, age, sex, nationality) values ('denis', 'denisov', 'denisovich', '50', 'male', 'RU')",
-			oper:    "Insert",
-			want:    `{"message":"success operation","code":200,"affected_rows":1} insert` + "\n",
-		},
-		{
-			testNum: 2,
-			name:    "test update",
-			conn:    "update test set sex = 'female' , nationality = 'RU' , age = '50' where id = '2'",
-			oper:    "Update",
-			want:    `{"message":"success operation","code":200,"affected_rows":1} update` + "\n",
-		},
-		{
-			testNum: 3,
 			name:    "test delete",
 			conn:    "delete from test where id = '99'",
 			oper:    "Delete",
 			want:    `{"message":"operation failed, nothing to execute","code":404}` + "\n",
+		},
+		{
+			testNum: 2,
+			name:    "test insert",
+			conn:    "insert into test (name, surname, patronymic, age, sex, nationality) values ('denis', 'denisov', 'denisovich', '50', 'male', 'RU')",
+			oper:    "Insert",
+			want:    `{"message":"success operation","code":200,"affected_rows":1}` + "\n",
+		},
+		{
+			testNum: 3,
+			name:    "test update",
+			conn:    "update test set sex = 'female' , nationality = 'RU' , age = '50' where id = '2'",
+			oper:    "Update",
+			want:    `{"message":"success operation","code":200,"affected_rows":1}` + "\n",
 		},
 	}
 
